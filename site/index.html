@@ -13,18 +13,20 @@
 <meta property="og:site_name" content="Sinai Seeds">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ar_EG">
-<meta property="og:image" content="https://sinai-seeds.mo2868417.workers.dev/og.png">
+<meta property="og:image" content="https://sinai-seeds.mo2868417.workers.dev/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Aly Fayed, Sinai Seeds digital contact card">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Aly Fayed · Sinai Seeds">
 <meta name="twitter:description" content="Digital contact card: WhatsApp, call, email, WeChat and location in one tap.">
-<meta name="twitter:image" content="https://sinai-seeds.mo2868417.workers.dev/og.png">
+<meta name="twitter:image" content="https://sinai-seeds.mo2868417.workers.dev/og.jpg">
 <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJIAAABpCAYAAADRLnpUAAADfklEQVR4nO2d23bjIAwAcU///5e9D13nuKkdY6MrmnlszwYhDYImXrKs69rgD1tSFtcoEvHtHUAw3lcVQnXy5R1AID615vXi9+VBpB96JUGmExDpPsh0QPUzElIIUbkjjUiEgG9UFUlCBA7gO6qKBMJUFEm6i9CVWj2RtIpeXqZKImkXu7RMVUSyKnJZmaqIZElJmSqI5FHYcjLNLlK5gnoxs0jeEnmPb8rMIkWgjEyzihSpgJFiUWNGkSIWLmJMoswoEjgwm0iRV37k2IaZTSRwYiaRMqz4DDE+YhaRMhUoU6zdzCDSlIXJxgwiZWQ6+bOLNF1BspJdJAhCZpGyd6Ps8f8is0gQCETyZZqulFWkaQrQJplLVpEgGIgEImQUaYqt4I30c8ooEgQEkUCEbCKl3wI+kHpuZze2cZtrbXqlfvnxLtLZ9cCH/xim425XXNt/H77ffvhkMCuxUrf+Tl6FMRxPBInLSPfB0K3io7IgpW+19epWcI7FvVCL9vXIZ5NAMF3MjwGbSNYD3z0LVDgfjeKaI88L29kGj0m5yCLd/M+hvZ8Q8uyJJNKecIkKRMjcZPuIpApHsoT+poGoHQkCS3PASkcCERAJREAkEOGr5dqLISh0JBABkUCEr8a7yCAAHQlEQCQQAZFABEQCERAJREAkEAGRQAREAhEQCURAJBABkUCCBZFABEQCETaReAIAhqAjgQiIBKMsrSESCIFIIAIigQh7kfjLbX7UakxHqoOGRK/X1BRpaXS5KKjXgY5UC7X/Vf0ukmr7Axe08v/rdTU7Elf5FcJya0Mme/Y5l9zW/tTySCTNgiOTHVoSHaLdkbgyxwfzBXsmknZXojPp4ZJbizMSXcmOI4mk838oqtVhm+9908c1n59EsggMmWQ4y6NJN2rtuiMhU3xC5M/yfaRPqyNEMhLyKW9m3ai1PpEki4xMclhKdInHh7bIpIuGRJd16RXJssDIdI3V4bobr8dIriaMTMd4vJnbNd4dkaQn0CMTQv3QkwuXLW3jbkeylkljzGz0zN9VotbyPCFZUabejhziI6gnInl0pW3cKkJ5z/P2+E87kpdM29jeidbE+xu2H+V2ZGvzLqb3+NJEWCCPx490RnqyuiIkf5QocxiKYVQkySSMvE6UYtwlSszDcSzrKrbNjryQ55nrjKcPiZ09K60pzdP5isX0DzvrfOHBAYDnAAAAAElFTkSuQmCC">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700&family=Caveat:wght@600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700&family=Caveat:wght@600&display=swap" rel="stylesheet"></noscript>
 <style>
 .sscx-page {
     --acc: #8bc34a;          
@@ -489,9 +491,10 @@ body {
     box-shadow: 0 16px 40px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.03) inset;
     backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     opacity: 0; transform: translateY(-6px) scale(.98); pointer-events: none;
-    transition: opacity .16s, transform .16s;
+    visibility: hidden; transition: opacity .16s, transform .16s, visibility 0s linear .16s;
 }
-.sscx-langmenu.on { opacity: 1; transform: none; pointer-events: auto; }
+.sscx-langmenu.on { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition-delay: 0s; }
+.sscx-langmenu button { min-height: 44px; }
 .sscx-langmenu button {
     display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
     padding: 10px 12px; border: 0; border-radius: 11px; background: transparent;
@@ -517,13 +520,14 @@ html[dir="rtl"] .sscx-btn { letter-spacing: 0; }
     padding: 10px 18px;
     border-radius: 999px;
     box-shadow: 0 10px 30px rgba(0,0,0,.5);
-    transition: transform .3s ease;
+    transition: transform .3s ease, opacity .3s ease, visibility 0s linear .3s;
+    opacity: 0; visibility: hidden;
     z-index: 2000;
     pointer-events: none;
     max-width: 86vw;
     text-align: center;
 }
-.sscx-toast.on { transform: translateX(-50%) translateY(0); }
+.sscx-toast.on { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; transition-delay: 0s; }
 .sscx-copy-btn {
     display: inline-flex; align-items: center; gap: 9px;
     height: 42px; padding: 0 18px;
@@ -556,6 +560,7 @@ html[dir="rtl"] .sscx-btn { letter-spacing: 0; }
     -webkit-backdrop-filter: blur(16px) saturate(1.1);
 }
 .sscx-page { position: relative !important; }
+.sscx-page { padding-bottom: 46px !important; }
 .sscx-deco { position: absolute; z-index: 0; pointer-events: none; user-select: none; }
 .sscx-deco-words {
     top: 6.5%; inset-inline-start: 7%;
@@ -604,7 +609,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
     gap: 8px !important;
     padding: 10px 8px !important;
 }
-.sscx-btn svg { width: 19px !important; height: 19px !important; }
+.sscx-btn svg { width: 19px !important; height: 19px !important; flex-shrink: 0; }
 .sscx-btn-wa {
     background: linear-gradient(135deg,#2aa55e,#0f7a40) !important;
     box-shadow: 0 6px 18px rgba(42,165,94,.22) !important;
@@ -619,6 +624,10 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
 }
 .sscx-btn-green svg, .sscx-btn-glass svg { color: #d9c46a !important; }
 .sscx-btn-glass svg { color: #cfcfcf !important; }
+.sscx-btn-web { grid-column: 1 / -1; }
+.sscx-btn-web svg { width: 21px !important; height: auto !important; }
+.sscx-btn-web-B { border-color: rgba(164,214,107,.55) !important; color: #d7ecb2 !important; background: linear-gradient(135deg, rgba(139,195,74,.20), rgba(139,195,74,.07)) !important; }
+
 .sscx-social {
     display: flex !important;
     justify-content: center !important;
@@ -648,7 +657,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
 <button type="button" role="option" data-lang="ar" lang="ar"><span>العربية</span><small>AR</small></button>
 <button type="button" role="option" data-lang="zh" lang="zh-Hans"><span>中文</span><small>ZH</small></button>
 <button type="button" role="option" data-lang="tr" lang="tr"><span>Türkçe</span><small>TR</small></button></div></div>
-<div class="sscx-page">
+<main class="sscx-page">
     <div class="sscx-deco sscx-deco-words" aria-hidden="true">SINAI<br>SEEDS<br>GROW<br>HARVEST</div>
     <div class="sscx-deco sscx-deco-script" aria-hidden="true">Grow<br>Harvest</div>
     <div class="sscx-deco sscx-deco-tag" aria-hidden="true" data-i18n="decoTag">For agricultural investment</div>
@@ -659,6 +668,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
         <p class="sscx-copy" data-i18n="copy">For agricultural investment, rooted in Sadat&nbsp;City,&nbsp;Egypt.</p>
         <div class="sscx-actions">
             <a class="sscx-btn sscx-btn-wa" href="https://wa.me/201222206513" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.83 14.12c-.25.7-1.45 1.33-2.02 1.42-.52.08-1.17.11-1.89-.12-.44-.14-1-.32-1.71-.63-3.02-1.3-4.99-4.34-5.14-4.54-.15-.2-1.23-1.63-1.23-3.11 0-1.48.78-2.21 1.05-2.51.27-.3.6-.38.8-.38.2 0 .4 0 .57.01.18.01.43-.07.67.51.25.6.85 2.07.92 2.22.08.15.13.33.03.53-.1.2-.15.33-.3.5-.15.18-.32.4-.45.53-.15.15-.31.31-.13.61.18.3.79 1.31 1.7 2.12 1.17 1.04 2.16 1.37 2.46 1.52.3.15.48.13.65-.08.18-.2.75-.88.95-1.18.2-.3.4-.25.67-.15.28.1 1.75.83 2.05.98.3.15.5.23.58.35.07.13.07.73-.18 1.42z"/></svg> <span data-i18n="wa">Chat on WhatsApp</span></a>
+            <a class="sscx-btn sscx-btn-web sscx-btn-web-B" href="https://www.sinai-seeds.com/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 140 125" aria-hidden="true" focusable="false"><defs><linearGradient id="wlA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2fa6e"/><stop offset="1" stop-color="#abdc28"/></linearGradient><linearGradient id="wlB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4f356"/><stop offset="1" stop-color="#98c623"/></linearGradient></defs><path d="M70 14 C58 19 45 32 43 50 C41 66 52 84 70 93 C88 84 99 66 97 50 C95 32 82 19 70 14 Z" fill="url(#wlB)"/><path d="M3 55 C20 56 38 64 52 84 C56 95 62 108 70 118 C58 112 44 105 33 100 C30 106 26 112 20 116 C14 111 8 100 4 86 C1 74 1 63 3 55 Z" fill="url(#wlA)"/><g transform="translate(140 0) scale(-1 1)"><path d="M3 55 C20 56 38 64 52 84 C56 95 62 108 70 118 C58 112 44 105 33 100 C30 106 26 112 20 116 C14 111 8 100 4 86 C1 74 1 63 3 55 Z" fill="url(#wlA)"/></g></svg> <span data-i18n="web">Browse our catalog</span></a>
             <button type="button" class="sscx-btn sscx-btn-green" id="saveBtn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg> <span data-i18n="save">Save contact</span></button>
             <button type="button" class="sscx-btn sscx-btn-glass" id="shareBtn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg> <span data-i18n="share">Share card</span></button>
         </div>
@@ -672,7 +682,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
         <div class="sscx-footer" data-i18n="footer">Tap any button to get in touch directly.</div>
         <svg class="sscx-field" viewBox="0 0 400 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0 22 Q 200 8 400 22"/><path d="M-10 40 Q 200 20 410 40"/><path d="M-20 58 Q 200 32 420 58"/><path d="M-35 78 Q 200 46 435 78"/><path d="M-55 100 Q 200 62 455 100"/></svg>
     </div>
-</div>
+</main>
 
 <dialog class="sscx-modal" id="wechatModal">
     <div class="sscx-modal-card">
@@ -707,6 +717,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
             wa: 'Chat on WhatsApp',
             save: 'Save contact',
             share: 'Share card',
+            web: 'Browse our catalog',
             address: 'Sadat City, 11th District, Monufia, Egypt',
             footer: 'Tap any button to get in touch directly.',
             wechatTitle: 'Scan with WeChat',
@@ -733,6 +744,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
             wa: 'تواصل واتساب',
             save: 'حفظ جهة الاتصال',
             share: 'مشاركة الكارت',
+            web: 'تصفح الكتالوج',
             address: 'مدينة السادات، الحي الحادي عشر، المنوفية، مصر',
             footer: 'اضغط على أي زر للتواصل المباشر والسريع',
             wechatTitle: 'امسح الكود بتطبيق WeChat',
@@ -759,6 +771,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
             wa: 'WhatsApp 联系',
             save: '保存联系人',
             share: '分享名片',
+            web: '浏览产品目录',
             address: '埃及 米努菲亚省 萨达特城 第11区',
             footer: '点击任意按钮即可直接联系。',
             wechatTitle: '用微信扫码',
@@ -785,6 +798,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
             wa: 'WhatsApp’tan yaz',
             save: 'Kişiyi kaydet',
             share: 'Kartı paylaş',
+            web: 'Kataloğu incele',
             address: 'Sadat Şehri, 11. Bölge, Menufiye, Mısır',
             footer: 'Doğrudan iletişim için herhangi bir düğmeye dokunun.',
             wechatTitle: 'WeChat ile tara',
@@ -817,6 +831,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
     } catch (e) {}
 
     function setMeta(sel, v) { var m = document.querySelector(sel); if (m) m.setAttribute('content', v); }
+    var langBtn0;
     function applyLang() {
         var t = T[lang];
         document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : lang;
@@ -833,6 +848,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
             if (t[k] !== undefined) el.textContent = t[k];
         });
         document.getElementById('langCur').textContent = NAMES[lang];
+        langBtn0 = document.getElementById('langToggle'); if (langBtn0) langBtn0.setAttribute('aria-label', 'Language: ' + NAMES[lang]);
         document.querySelectorAll('#langMenu button').forEach(function (b) {
             b.setAttribute('aria-selected', b.getAttribute('data-lang') === lang ? 'true' : 'false');
         });
@@ -868,7 +884,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
         'BEGIN:VCARD', 'VERSION:3.0', 'N:Fayed;Aly;;Mr.;', 'FN:Aly Fayed',
         'ORG:Sinai Seeds', 'TITLE:' + t('vcardTitle'), 'TEL;TYPE=CELL:+201222206513',
         'EMAIL:alyfayed@sinai-seeds.com', 'ADR;TYPE=WORK:;;11th District;Sadat City;;Monufia;Egypt',
-        'URL:https://www.facebook.com/share/1ChyrUYQ5d/?mibextid=wwXIfr', 'END:VCARD', ''
+        'URL:https://www.sinai-seeds.com/', 'URL:https://www.facebook.com/share/1ChyrUYQ5d/?mibextid=wwXIfr', 'END:VCARD', ''
     ].join('\r\n'); }
 
     document.getElementById('saveBtn').addEventListener('click', function () {
