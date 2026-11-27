@@ -26,3 +26,4 @@ To change the link preview: re-render og-preview.html to a 1200x630 image (keep 
 
 ## Change log
 - 2026-11-27: fonts no longer block rendering; closed language menu out of tab order; Arabic button icons fixed; empty toast hidden; 44px menu items; language button label; main landmark; og.png (534 KB) replaced by og.jpg (67 KB); new "Catalog" button (https://www.sinai-seeds.com/) in 4 languages; vCard has the website as first URL, Facebook second.
+- 2026-11-27: "Share card" popup QR is now generated in the browser from the current page URL (qrcode-generator, MIT, inlined; error correction H, leaf logo in the center). The pre-rendered image stays as the fallback if JS fails. WeChat QR image unchanged.
