@@ -1,0 +1,8 @@
+name = "sinai-seeds"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[assets]
+directory = "../site"
+binding = "ASSETS"
+# index.html is served at "/", og-preview.html at "/og-preview.html"
