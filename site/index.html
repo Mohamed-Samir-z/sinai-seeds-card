@@ -419,17 +419,9 @@
     background: linear-gradient(135deg, rgba(20,46,24,.9), rgba(13,32,17,.9));
 }
 html, body { margin: 0; padding: 0; }
-/* self-review fixes: no top hairline through the logo, clean hero SVG, logical close button */
+/* self-review fixes: no top hairline through the logo, logical close button */
 .sscx-close { right: auto; inset-inline-end: 12px; z-index: 3; }
 .sscx-card::after { content: none; }
-.sscx-hero svg.logo {
-    width: 112px;
-    height: auto;
-    margin-top: 6px;
-    filter: drop-shadow(0 0 16px rgba(178,235,80,.5)) drop-shadow(0 8px 18px rgba(139,195,74,.35));
-    position: relative;
-    z-index: 2;
-}
 .sscx-modal-card {
     overflow: hidden;
     border-color: rgba(139,195,74,.45);
@@ -580,11 +572,6 @@ html[dir="rtl"] .sscx-btn { letter-spacing: 0; }
 html[dir="rtl"] .sscx-deco { direction: ltr; }
 .sscx-hero { height: auto !important; overflow: visible !important; margin: 0 !important; }
 .sscx-hero::before { left: 8% !important; right: 8% !important; top: 0 !important; height: 150px !important; }
-.sscx-hero svg.logo {
-    width: 180px !important;
-    margin-top: 0 !important;
-    filter: drop-shadow(0 0 16px rgba(178,235,80,.55)) drop-shadow(0 0 34px rgba(217,196,106,.22)) drop-shadow(0 10px 20px rgba(0,0,0,.35)) !important;
-}
 .sscx-hero { margin-bottom: 10px !important; }
 .sscx-name {
     font-size: 1.48rem !important;
@@ -649,6 +636,24 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
 .sscx-address svg { color: #d9c46a !important; width: 15px !important; height: 15px !important; }
 .sscx-footer { font-size: .73rem !important; color: #9aa08e !important; }
 
+
+/* 2026-11-28: real client logo, cropped from the logo image Ali Fayed posted on Facebook.
+   Replaces the vector three-leaf stand-in. Source was a 589px phone screenshot, so the
+   asset is kept at its native 363x414 px and displayed at half size or less to stay sharp. */
+.sscx-hero img.logo-img {
+    width: 176px !important;
+    height: auto !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,.45)) drop-shadow(0 0 16px rgba(139,195,74,.30)) !important;
+    position: relative;
+    z-index: 2;
+}
+@media (min-width: 420px) {
+    .sscx-hero img.logo-img { width: 196px !important; }
+}
 </style>
 </head>
 <body>
@@ -662,7 +667,7 @@ html[dir="rtl"] .sscx-bio { font-size: .89rem !important; }
     <div class="sscx-deco sscx-deco-script" aria-hidden="true">Grow<br>Harvest</div>
     <div class="sscx-deco sscx-deco-tag" aria-hidden="true" data-i18n="decoTag">For agricultural investment</div>
     <div class="sscx-card">
-        <div class="sscx-hero"><svg class="logo" viewBox="0 0 155 125" role="img" aria-label="Sinai Seeds logo, three leaves"><defs><linearGradient id="lgBlade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2fa6e"/><stop offset="1" stop-color="#abdc28"/></linearGradient><linearGradient id="lgCenter" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4f356"/><stop offset="1" stop-color="#98c623"/></linearGradient></defs><path d="M70 14 C58 19 45 32 43 50 C41 66 52 84 70 93 C88 84 99 66 97 50 C95 32 82 19 70 14 Z" fill="url(#lgCenter)"/><path d="M3 55 C20 56 38 64 52 84 C56 95 62 108 70 118 C58 112 44 105 33 100 C30 106 26 112 20 116 C14 111 8 100 4 86 C1 74 1 63 3 55 Z" fill="url(#lgBlade)"/><g transform="translate(140 0) scale(-1 1)"><path d="M3 55 C20 56 38 64 52 84 C56 95 62 108 70 118 C58 112 44 105 33 100 C30 106 26 112 20 116 C14 111 8 100 4 86 C1 74 1 63 3 55 Z" fill="url(#lgBlade)"/></g></svg></div>
+        <div class="sscx-hero"><picture><source type="image/webp" srcset="img/logo-lockup.webp"><img class="logo-img" src="img/logo-lockup.png" width="363" height="414" alt="Sinai Seeds logo: three leaves above a sign reading Sinai Seeds, Agricultural Investment, Ali Fayed" decoding="async"></picture></div>
         <h1 class="sscx-name" data-i18n="name">Aly Fayed</h1>
         <p class="sscx-bio" data-i18n="role">Sinai Seeds · Company Owner</p>
         <p class="sscx-copy" data-i18n="copy">For agricultural investment, rooted in Sadat&nbsp;City,&nbsp;Egypt.</p>
