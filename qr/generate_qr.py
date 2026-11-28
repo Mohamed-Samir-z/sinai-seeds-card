@@ -3,14 +3,21 @@
 Usage:  python3 generate_qr.py [URL] [OUTPUT-PREFIX]
   URL            the link the QR opens (default: the live card)
   OUTPUT-PREFIX  file name stem, written in this folder (default: sinai-qr)
+  MARK           leaf (default) or lockup: what sits in the middle of the QR
 
 The design is the same for every URL; only the encoded link changes.
 Needs: pip install segno pillow numpy
 """
-import segno, random, math, sys
+import segno, random, math, sys, os
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageChops
 URL = sys.argv[1] if len(sys.argv) > 1 else "https://sinai-seeds.mo2868417.workers.dev"
 PREFIX = sys.argv[2] if len(sys.argv) > 2 else "sinai-qr"
+MARK = sys.argv[3] if len(sys.argv) > 3 else "leaf"      # "leaf" or "lockup"
+
+# the real client logo (three leaves over the sign plate), used when MARK="lockup"
+LOCKUP_W, LOCKUP_H = 363, 414
+LOCKUP = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "..", "site", "img", "logo-lockup.png")).convert("RGBA")
 F="/usr/share/fonts/truetype/noto/"
 def font(n,s): return ImageFont.truetype(F+n,s)
 # logo
@@ -24,10 +31,24 @@ logo.save('logo_cut.png')
 qr=segno.make(URL,error='h',boost_error=False)
 M=qr.matrix; N=len(M); print('modules',N,'version',qr.version)
 def lerp(c1,c2,t): return tuple(int(c1[i]+(c2[i]-c1[i])*t) for i in range(3))
-def make_qr(px, c1, c2, logo_bg=(250,243,214), ring=(176,138,40), clear=0.22):
-    SS=2; P=px*SS; m=P/N; 
+def make_qr(px, c1, c2, mark="leaf", logo_bg=(250,243,214), ring=(176,138,40), clear=0.22, badge_h=0.24, badge_fill=(20,28,11)):
+    """Draw the QR with a mark in the middle.
+
+    mark="leaf"    the old green leaf on a dark disc (the first card's set)
+    mark="lockup"  the real Sinai Seeds logo, leaves over the sign plate, on a
+                   white badge (the second card's set). It is kept small enough
+                   that the QR still decodes; error correction is already H.
+    """
+    SS=2; P=px*SS; m=P/N
     mask=Image.new('L',(P,P),0); d=ImageDraw.Draw(mask)
-    cx=cy=N/2; cr=clear*N/2+0.8
+    cx=cy=N/2
+    if mark=="leaf":
+        cr=clear*N/2+0.8; hw=hh=cr
+        def covered(x,y): return math.hypot(x+.5-cx,y+.5-cy)<cr
+    else:
+        hh=badge_h*N/2+0.8
+        hw=hh*LOCKUP_W/LOCKUP_H*1.06
+        def covered(x,y): return abs(x+.5-cx)<hw and abs(y+.5-cy)<hh
     def finder(x0,y0):
         d.rounded_rectangle([x0*m,y0*m,(x0+7)*m,(y0+7)*m],radius=m*.45,fill=255)
         d.rounded_rectangle([(x0+1)*m,(y0+1)*m,(x0+6)*m,(y0+6)*m],radius=m*.2,fill=0)
@@ -37,19 +58,26 @@ def make_qr(px, c1, c2, logo_bg=(250,243,214), ring=(176,138,40), clear=0.22):
         for x in range(N):
             if not M[y][x]: continue
             if (x<8 and y<8) or (x>=N-8 and y<8) or (x<8 and y>=N-8): continue
-            if math.hypot(x+.5-cx,y+.5-cy)<cr: continue
+            if covered(x,y): continue
             d.rounded_rectangle([x*m-m*.05,y*m-m*.05,(x+1)*m+m*.05,(y+1)*m+m*.05],radius=m*.3,fill=255)
     grad=Image.new('RGB',(P,P)); gd=ImageDraw.Draw(grad)
     for i in range(P): gd.line([(0,i),(P,i)],fill=lerp(c1,c2,i/P))
     out=Image.new('RGBA',(P,P),(0,0,0,0)); out.paste(grad,(0,0),mask)
-    # logo medallion
-    R=int(clear*P/2); dd=ImageDraw.Draw(out)
-    dd.ellipse([P/2-R,P/2-R,P/2+R,P/2+R],fill=logo_bg+(255,))
-    dd.ellipse([P/2-R,P/2-R,P/2+R,P/2+R],outline=ring+(255,),width=max(2,P//150))
-    # leaf on dark disc inside
-    r2=int(R*0.82); dd.ellipse([P/2-r2,P/2-r2,P/2+r2,P/2+r2],fill=(22,30,12,255))
-    lw=int(r2*1.45); lh=int(logo.height*lw/logo.width); l=logo.resize((lw,lh),Image.LANCZOS)
-    out.alpha_composite(l,(int(P/2-lw/2),int(P/2-lh/2)+int(R*0.02)))
+    dd=ImageDraw.Draw(out)
+    if mark=="leaf":
+        R=int(clear*P/2)
+        dd.ellipse([P/2-R,P/2-R,P/2+R,P/2+R],fill=logo_bg+(255,))
+        dd.ellipse([P/2-R,P/2-R,P/2+R,P/2+R],outline=ring+(255,),width=max(2,P//150))
+        r2=int(R*0.82); dd.ellipse([P/2-r2,P/2-r2,P/2+r2,P/2+r2],fill=(22,30,12,255))
+        lw=int(r2*1.45); lh=int(logo.height*lw/logo.width); l=logo.resize((lw,lh),Image.LANCZOS)
+        out.alpha_composite(l,(int(P/2-lw/2),int(P/2-lh/2)+int(R*0.02)))
+    else:
+        bw=int(2*hw*m); bh=int(2*hh*m)
+        dd.rounded_rectangle([P/2-bw/2,P/2-bh/2,P/2+bw/2,P/2+bh/2],radius=int(bh*.10),
+                             fill=badge_fill+(255,),outline=ring+(255,),width=max(3,int(P/260)))
+        pad=int(bh*.07)
+        lh=bh-2*pad; lw=int(lh*LOCKUP_W/LOCKUP_H)
+        out.alpha_composite(LOCKUP.resize((lw,lh),Image.LANCZOS),(int(P/2-lw/2),int(P/2-lh/2)))
     return out.resize((px,px),Image.LANCZOS)
 def spaced(d,xy,t,f,fill,sp,anchor='m'):
     w=sum(d.textlength(c,font=f) for c in t)+sp*(len(t)-1)
@@ -89,7 +117,7 @@ sh=Image.new('RGBA',(W,H),(0,0,0,0)); ImageDraw.Draw(sh).rounded_rectangle([px0,
 A=Image.alpha_composite(A.convert('RGBA'),sh.filter(ImageFilter.GaussianBlur(50))); ad=ImageDraw.Draw(A)
 ad.rounded_rectangle([px0-14,py0-14,px0+pw+14,py0+ph+14],radius=124,fill=GOLD)
 ad.rounded_rectangle([px0,py0,px0+pw,py0+ph],radius=110,fill=CREAM)
-q=make_qr(1420,(24,52,14),(56,34,8)); A.alpha_composite(q,(px0+(pw-1420)//2,py0+(ph-1420)//2))
+q=make_qr(1420,(24,52,14),(56,34,8),mark=MARK); A.alpha_composite(q,(px0+(pw-1420)//2,py0+(ph-1420)//2))
 # headline
 ctext(ad,W/2,230,"SINAI SEEDS",font("NotoSerif-Bold.ttf",50),GOLD) if False else spaced(ad,(W/2,230),"SINAI SEEDS",font("NotoSerif-Bold.ttf",130),GOLD,34)
 spaced(ad,(W/2,430),"GROW  HARVEST",font("NotoSans-Bold.ttf",46),(200,170,95),22)
@@ -102,7 +130,7 @@ ctext(ad,W/2,py0+ph+350,"Sadat City, 11th District, Monufia, Egypt",font("NotoSa
 A.convert('RGB').save(f'./{PREFIX}-A-poster.png',dpi=(300,300))
 # ---------- B clean
 S=3000; B=Image.new('RGB',(S,S),CREAM); bd=ImageDraw.Draw(B)
-q=make_qr(2150,(28,58,16),(70,42,8)); B.paste(q,((S-2150)//2,(S-2150)//2-150),q)
+q=make_qr(2150,(28,58,16),(70,42,8),mark=MARK); B.paste(q,((S-2150)//2,(S-2150)//2-150),q)
 bd.rounded_rectangle([110,110,S-110,S-110],radius=120,outline=(176,138,40),width=10)
 spaced(bd,(S/2,S-580),"SINAI SEEDS",font("NotoSerif-Bold.ttf",120),(80,52,10),30)
 ctext(bd,S/2,S-390,"Scan to open the digital card",font("NotoSans-Bold.ttf",64),(70,100,40))
@@ -116,7 +144,7 @@ rg=rg.filter(ImageFilter.GaussianBlur(260)); m=Image.new('L',(S,S),0); ImageDraw
 C.paste(ImageChops.add(Image.new('RGB',(S,S),(16,22,10)),rg.point(lambda v:int(v*.5))),(0,0),m)
 cd=ImageDraw.Draw(C); cd.ellipse([90,90,S-90,S-90],outline=(226,196,110),width=8)
 pw=1700; cd.rounded_rectangle([(S-pw)//2,(S-pw)//2+20,(S+pw)//2,(S+pw)//2+20],radius=140,fill=CREAM)
-q=make_qr(1450,(24,52,14),(56,34,8)); C.alpha_composite(q,((S-1450)//2,(S-1450)//2+20))
+q=make_qr(1450,(24,52,14),(56,34,8),mark=MARK); C.alpha_composite(q,((S-1450)//2,(S-1450)//2+20))
 spaced(cd,(S/2,230),"SINAI SEEDS",font("NotoSerif-Bold.ttf",150),GOLD,36)
 spaced(cd,(S/2,440),"GROW  HARVEST",font("NotoSans-Bold.ttf",56),(200,170,95),24)
 ctext(cd,S/2,S-500,"Scan to open the digital card",font("NotoSans-Bold.ttf",96),CREAM)
