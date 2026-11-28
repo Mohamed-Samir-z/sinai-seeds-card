@@ -57,9 +57,14 @@ def main() -> int:
         1,
     )
 
-    # a CSS comment still mentions that the logo came from a Facebook post, that is fine
-    if "facebook.com" in out.lower():
-        sys.exit("A Facebook link survived the cleaning")
+    # 5. no trace of the word at all, not even in a CSS comment
+    out = out.replace(
+        "cropped from the logo image Ali Fayed posted on Facebook.",
+        "cropped from a photo of the printed logo.",
+    )
+
+    if "facebook" in out.lower():
+        sys.exit("Facebook still mentioned after cleaning")
 
     OUT.mkdir(exist_ok=True)
     (OUT / "index.html").write_text(out, encoding="utf-8")
@@ -71,7 +76,7 @@ def main() -> int:
     for name in ("og.jpg", "og.png"):
         shutil.copy2(SITE / name, OUT / name)
 
-    print("wrote", OUT / "index.html", len(out), "bytes; facebook.com links left:", out.lower().count("facebook.com"))
+    print("wrote", OUT / "index.html", len(out), "bytes; facebook mentions left:", out.lower().count("facebook"))
     return 0
 
 
