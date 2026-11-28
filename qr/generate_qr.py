@@ -10,6 +10,7 @@ The design is the same for every URL; only the encoded link changes.
 Needs: pip install segno pillow numpy
 """
 import segno, random, math, sys, os
+import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageChops
 URL = sys.argv[1] if len(sys.argv) > 1 else "https://sinai-seeds.mo2868417.workers.dev"
 PREFIX = sys.argv[2] if len(sys.argv) > 2 else "sinai-qr"
@@ -25,6 +26,21 @@ _CREAM = (250, 243, 214)
 _tint = Image.new("RGB", LOCKUP.size, _CREAM)
 LOGO_CREAM = ImageChops.multiply(LOCKUP.convert("RGB"), _tint).convert("RGBA")
 LOGO_CREAM.putalpha(LOCKUP.getchannel("A"))
+
+# same again, but the whole sign plate is flattened to flat cream so not even its
+# faint crop edge shows when the logo sits straight on a cream background
+_PLATE_TOP = int(round(LOCKUP_H * 252 / 414))     # plate starts 60.8% down the image
+LOGO_FREE = LOCKUP.copy()
+_plate = ImageChops.multiply(LOGO_FREE.crop((0, _PLATE_TOP, LOCKUP_W, LOCKUP_H)).convert("RGB"),
+                             Image.new("RGB", (LOCKUP_W, LOCKUP_H - _PLATE_TOP), _CREAM))
+_a = np.asarray(_plate).astype("int16")
+_lum = _a.mean(axis=2)
+_sat = _a.max(axis=2) - _a.min(axis=2)
+# everything light, and the faint grey line the crop left along the plate edge,
+# becomes the background colour; the dark text is untouched
+_a[(_lum > 210) | ((_lum > 165) & (_sat < 25))] = _CREAM
+_a[:, :3] = _CREAM; _a[:, -3:] = _CREAM; _a[-3:, :] = _CREAM   # the crop's own edge line
+LOGO_FREE.paste(Image.fromarray(_a.astype("uint8")), (0, _PLATE_TOP))
 F="/usr/share/fonts/truetype/noto/"
 def font(n,s): return ImageFont.truetype(F+n,s)
 # logo
@@ -54,7 +70,7 @@ def make_qr(px, c1, c2, mark="leaf", logo_bg=(250,243,214), ring=(176,138,40), c
         cr=clear*N/2+0.8; hw=hh=cr
         def covered(x,y): return math.hypot(x+.5-cx,y+.5-cy)<cr
     elif mark=="free":
-        logo_h=0.24*N                       # logo height in modules
+        logo_h=0.30*N                       # logo height in modules
         hw=logo_h*LOCKUP_W/LOCKUP_H/2+1.0   # one module of margin all round
         hh=logo_h/2+1.0
         def covered(x,y): return abs(x+.5-cx)<hw and abs(y+.5-cy)<hh
@@ -86,7 +102,7 @@ def make_qr(px, c1, c2, mark="leaf", logo_bg=(250,243,214), ring=(176,138,40), c
         out.alpha_composite(l,(int(P/2-lw/2),int(P/2-lh/2)+int(R*0.02)))
     elif mark=="free":
         lw=int(2*(hw-1.0)*m); lh=int(2*(hh-1.0)*m)
-        out.alpha_composite(LOGO_CREAM.resize((lw,lh),Image.LANCZOS),(int(P/2-lw/2),int(P/2-lh/2)))
+        out.alpha_composite(LOGO_FREE.resize((lw,lh),Image.LANCZOS),(int(P/2-lw/2),int(P/2-lh/2)))
     else:
         bw=int(2*hw*m); bh=int(2*hh*m)
         dd.rounded_rectangle([P/2-bw/2,P/2-bh/2,P/2+bw/2,P/2+bh/2],radius=int(bh*.10),
@@ -143,14 +159,16 @@ ctext(ad,W/2,790,"امسح الكود لفتح كارت التواصل",font("No
 ctext(ad,W/2,py0+ph+110,"Ali Fayed",font("NotoSerif-Bold.ttf",110),GOLD)
 spaced(ad,(W/2,py0+ph+260),"COMPANY OWNER  ·  SINAI SEEDS",font("NotoSans-Bold.ttf",46),(200,170,95),12)
 ctext(ad,W/2,py0+ph+350,"Sadat City, 11th District, Monufia, Egypt",font("NotoSans-Bold.ttf",44),(150,190,110))
+ad.line([(W/2-200,py0+ph+455),(W/2+200,py0+ph+455)],fill=(120,96,32),width=3)
+spaced(ad,(W/2,py0+ph+500),URL.replace("https://",""),font("NotoSans-Bold.ttf",40),(170,150,105),5)
 A.convert('RGB').save(f'./{PREFIX}-A-poster.png',dpi=(300,300))
 # ---------- B clean
 S=3000; B=Image.new('RGB',(S,S),CREAM); bd=ImageDraw.Draw(B)
-q=make_qr(2150,(28,58,16),(70,42,8),mark=MARK); B.paste(q,((S-2150)//2,(S-2150)//2-150),q)
+QS=2000; q=make_qr(QS,(28,58,16),(70,42,8),mark=MARK); B.paste(q,((S-QS)//2,360),q)
 bd.rounded_rectangle([110,110,S-110,S-110],radius=120,outline=(176,138,40),width=10)
-spaced(bd,(S/2,S-580),"SINAI SEEDS",font("NotoSerif-Bold.ttf",120),(80,52,10),30)
-ctext(bd,S/2,S-390,"Scan to open the digital card",font("NotoSans-Bold.ttf",64),(70,100,40))
-ctext(bd,S/2,S-285,"امسح لفتح كارت التواصل",font("NotoSansArabic-Bold.ttf",68),(70,100,40))
+spaced(bd,(S/2,2470),"SINAI SEEDS",font("NotoSerif-Bold.ttf",110),(80,52,10),28)
+ctext(bd,S/2,2640,"Scan to open the digital card",font("NotoSans-Bold.ttf",60),(70,100,40))
+ctext(bd,S/2,2740,"امسح لفتح كارت التواصل",font("NotoSansArabic-Bold.ttf",64),(70,100,40))
 B.save(f'./{PREFIX}-B-clean.png',dpi=(300,300))
 # ---------- C round dark sticker (transparent corners)
 S=3000; C=Image.new('RGBA',(S,S),(0,0,0,0)); cd=ImageDraw.Draw(C)
