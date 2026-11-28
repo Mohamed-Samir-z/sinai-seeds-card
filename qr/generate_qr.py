@@ -86,7 +86,7 @@ spaced(ad,(W/2,430),"GROW  HARVEST",font("NotoSans-Bold.ttf",46),(200,170,95),22
 ad.line([(W/2-260,560),(W/2+260,560)],fill=(176,138,40),width=4)
 ctext(ad,W/2,650,"Scan to open the digital card",font("NotoSans-Bold.ttf",84),CREAM)
 ctext(ad,W/2,790,"امسح الكود لفتح كارت التواصل",font("NotoSansArabic-Bold.ttf",88),(197,225,165))
-ctext(ad,W/2,py0+ph+110,"Aly Fayed",font("NotoSerif-Bold.ttf",110),GOLD)
+ctext(ad,W/2,py0+ph+110,"Ali Fayed",font("NotoSerif-Bold.ttf",110),GOLD)
 spaced(ad,(W/2,py0+ph+260),"COMPANY OWNER  ·  SINAI SEEDS",font("NotoSans-Bold.ttf",46),(200,170,95),12)
 ctext(ad,W/2,py0+ph+350,"Sadat City, 11th District, Monufia, Egypt",font("NotoSans-Bold.ttf",44),(150,190,110))
 A.convert('RGB').save('./sinai-qr-A-poster.png',dpi=(300,300))
