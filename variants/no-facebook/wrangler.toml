@@ -1,0 +1,9 @@
+# Preview only: the same Sinai Seeds card with every Facebook link removed.
+# Deployed to its own Worker so the live card (sinai-seeds) is never touched.
+name = "sinai-seeds-no-facebook"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[assets]
+directory = "site"
+binding = "ASSETS"
