@@ -41,10 +41,23 @@ body {
     backdrop-filter: blur(14px) saturate(1.1);
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
 }
-.og-logo { width: 139px; margin: 0 auto 9px; }
-.og-logo svg {
-    width: 139px; height: auto;
-    filter: drop-shadow(0 0 14px rgba(178,235,80,.55)) drop-shadow(0 0 30px rgba(217,196,106,.22)) drop-shadow(0 8px 18px rgba(0,0,0,.35));
+.og-logo { position: relative; width: 150px; margin: 0 auto 6px; line-height: 0; }
+/* warm halo behind the lockup so the sign blends into the dark gold card */
+.og-logo::before {
+    content: ""; position: absolute; left: -22%; right: -22%; top: 42%; bottom: -8%;
+    background: radial-gradient(closest-side, rgba(217,196,106,.22), rgba(217,196,106,0) 78%);
+    filter: blur(9px); pointer-events: none;
+}
+.og-logo img {
+    position: relative; display: block; width: 150px; height: auto;
+    filter: drop-shadow(0 10px 22px rgba(0,0,0,.45));
+}
+/* gentle cream tint over the white plate only, same treatment as the live card */
+.og-logo::after {
+    content: ""; position: absolute; left: -1px; right: -1px; top: 60.8%; bottom: -1px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, rgba(255,249,230,.55), rgba(238,214,155,.42));
+    mix-blend-mode: multiply; pointer-events: none; z-index: 3;
 }
 .og-name {
     font-size: 55px; font-weight: 800; line-height: 1.15; margin-bottom: 10px;
@@ -68,8 +81,8 @@ body {
 <div class="og-deco og-deco-script">Grow<br>Harvest</div>
 <div class="og-deco og-deco-tag">FOR AGRICULTURAL<br>INVESTMENT</div>
 <div class="og-card">
-    <div class="og-logo"><svg class="logo" viewBox="0 0 155 125" role="img" aria-label="Sinai Seeds logo, three leaves"><defs><linearGradient id="lgBlade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2fa6e"/><stop offset="1" stop-color="#abdc28"/></linearGradient><linearGradient id="lgCenter" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4f356"/><stop offset="1" stop-color="#98c623"/></linearGradient></defs><path d="M70 14 C58 19 45 32 43 50 C41 66 52 84 70 93 C88 84 99 66 97 50 C95 32 82 19 70 14 Z" fill="url(#lgCenter)"/><path d="M3 55 C20 56 38 64 52 84 C56 95 62 108 70 118 C58 112 44 105 33 100 C30 106 26 112 20 116 C14 111 8 100 4 86 C1 74 1 63 3 55 Z" fill="url(#lgBlade)"/><g transform="translate(140 0) scale(-1 1)"><path d="M3 55 C20 56 38 64 52 84 C56 95 62 108 70 118 C58 112 44 105 33 100 C30 106 26 112 20 116 C14 111 8 100 4 86 C1 74 1 63 3 55 Z" fill="url(#lgBlade)"/></g></svg></div>
-    <div class="og-name">Aly Fayed</div>
+    <div class="og-logo"><img src="img/logo-lockup.png" width="363" height="414" alt="Sinai Seeds logo"></div>
+    <div class="og-name">Ali Fayed</div>
     <div class="og-role">Company Owner &middot; Sinai Seeds</div>
     <div class="og-divider"></div>
     <div class="og-sub">Digital Contact Card &middot; كارت التواصل الرقمي</div>
