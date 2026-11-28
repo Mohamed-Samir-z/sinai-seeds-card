@@ -35,16 +35,33 @@ LOGO_FREE = Image.new("RGBA", LOCKUP.size, (0, 0, 0, 0))
 _src = np.asarray(LOCKUP.crop((0, _PLATE_TOP, LOCKUP_W, LOCKUP_H)).convert("RGB")).astype("float32")
 _lum = _src.mean(axis=2)
 _green = (_src[..., 1] - np.maximum(_src[..., 0], _src[..., 2])) > 18
-_ink = np.clip((200 - _lum) / 60.0, 0, 1)      # text and anything darker than the plate
-_ink[_green] = 1.0                              # leaf pixels stay as they are
-# drop the plate's own border line (it runs along the crop's edges and is what
-# made the patch read as a hard rectangle); the text sits well inside it
-_ink[:18, :] = 0; _ink[146:, :] = 0; _ink[:, :14] = 0; _ink[:, 346:] = 0
-_ink_img = Image.fromarray(_src.astype("uint8")).convert("RGBA")
-_ink_img.putalpha(Image.fromarray((_ink * 255).astype("uint8")))
+# alpha is how much ink covers each pixel, measured against the plate colour and
+# the ink colour, so thin strokes keep their weight instead of being cut away
+_bg = np.median(_src[_lum > 200], axis=0)
+_dark = _src[_lum < 90]
+_ink_col = np.median(_dark, axis=0) if len(_dark) else np.array([60, 40, 30], dtype="float32")
+_cov = np.clip((_bg[None, None, :] - _src) /
+               np.maximum(_bg[None, None, :] - _ink_col[None, None, :], 1.0), 0, 1)
+_a = np.clip((_cov.max(axis=2) - 0.04) / 0.96, 0, 1)
+# drop the plate's own border line and shadow: they run along the crop's edges
+_a[:18, :] = 0; _a[146:, :] = 0; _a[:, :14] = 0; _a[:, 346:] = 0
+_a[_green] = 1.0                                 # leaf pixels keep full weight
+# recover the true ink colour from the blend, so antialiased edges stay smooth
+_rgb = (_src - (1 - _a[..., None]) * _bg[None, None, :]) / np.maximum(_a[..., None], 1e-3)
+_rgb = np.clip(_rgb, 0, 255)
+_rgb[_a < 0.05] = _ink_col
+_rgb[_green] = _src[_green]
+_ink_img = Image.fromarray(_rgb.astype("uint8")).convert("RGBA")
+_ink_img.putalpha(Image.fromarray((_a * 255).astype("uint8")))
 LOGO_FREE.alpha_composite(_ink_img, (0, _PLATE_TOP))
 # the leaves above the plate, unchanged
 LOGO_FREE.alpha_composite(LOCKUP.crop((0, 0, LOCKUP_W, _PLATE_TOP)), (0, 0))
+# the leaves are cut flat where the sign plate used to cover them: soften the
+# last two rows a little so the cut is not a hairline (not a fade, just a feather)
+_la = np.asarray(LOGO_FREE.getchannel("A")).astype("float32")
+for _i, _k in enumerate((0.35, 0.65, 0.88)):
+    _la[_PLATE_TOP - 3 + _i, :] *= _k
+LOGO_FREE.putalpha(Image.fromarray(_la.astype("uint8")))
 LOGO_FREE.save('logo-free-preview.png')
 F="/usr/share/fonts/truetype/noto/"
 def font(n,s): return ImageFont.truetype(F+n,s)
