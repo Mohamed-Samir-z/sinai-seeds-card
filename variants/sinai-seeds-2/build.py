@@ -20,6 +20,8 @@ SITE = HERE.parent.parent / "site"      # the real card, the single source of tr
 OUT = HERE / "site"                     # what gets deployed (wrangler assets dir)
 
 FACEBOOK_URL = "https://www.facebook.com/share/1ChyrUYQ5d/?mibextid=wwXIfr"
+OLD_EMAIL = "alyfayed@sinai-seeds.com"
+NEW_EMAIL = "Alyfayed@sinai-seeds.com"
 
 
 def main() -> int:
@@ -62,6 +64,12 @@ def main() -> int:
         "cropped from the logo image Ali Fayed posted on Facebook.",
         "cropped from a photo of the printed logo.",
     )
+
+    # 6. this card uses its own email address (the live card keeps the old one)
+    n_old = out.count(OLD_EMAIL)
+    if n_old == 0:
+        sys.exit("old email not found")
+    out = out.replace(OLD_EMAIL, NEW_EMAIL)
 
     if "facebook" in out.lower():
         sys.exit("Facebook still mentioned after cleaning")
