@@ -1,6 +1,16 @@
-import segno, random, math
+"""Build the printable QR cards (poster, clean square, round sticker).
+
+Usage:  python3 generate_qr.py [URL] [OUTPUT-PREFIX]
+  URL            the link the QR opens (default: the live card)
+  OUTPUT-PREFIX  file name stem, written in this folder (default: sinai-qr)
+
+The design is the same for every URL; only the encoded link changes.
+Needs: pip install segno pillow numpy
+"""
+import segno, random, math, sys
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageChops
-URL="https://sinai-seeds.mo2868417.workers.dev"
+URL = sys.argv[1] if len(sys.argv) > 1 else "https://sinai-seeds.mo2868417.workers.dev"
+PREFIX = sys.argv[2] if len(sys.argv) > 2 else "sinai-qr"
 F="/usr/share/fonts/truetype/noto/"
 def font(n,s): return ImageFont.truetype(F+n,s)
 # logo
@@ -89,7 +99,7 @@ ctext(ad,W/2,790,"امسح الكود لفتح كارت التواصل",font("No
 ctext(ad,W/2,py0+ph+110,"Ali Fayed",font("NotoSerif-Bold.ttf",110),GOLD)
 spaced(ad,(W/2,py0+ph+260),"COMPANY OWNER  ·  SINAI SEEDS",font("NotoSans-Bold.ttf",46),(200,170,95),12)
 ctext(ad,W/2,py0+ph+350,"Sadat City, 11th District, Monufia, Egypt",font("NotoSans-Bold.ttf",44),(150,190,110))
-A.convert('RGB').save('./sinai-qr-A-poster.png',dpi=(300,300))
+A.convert('RGB').save(f'./{PREFIX}-A-poster.png',dpi=(300,300))
 # ---------- B clean
 S=3000; B=Image.new('RGB',(S,S),CREAM); bd=ImageDraw.Draw(B)
 q=make_qr(2150,(28,58,16),(70,42,8)); B.paste(q,((S-2150)//2,(S-2150)//2-150),q)
@@ -97,7 +107,7 @@ bd.rounded_rectangle([110,110,S-110,S-110],radius=120,outline=(176,138,40),width
 spaced(bd,(S/2,S-580),"SINAI SEEDS",font("NotoSerif-Bold.ttf",120),(80,52,10),30)
 ctext(bd,S/2,S-390,"Scan to open the digital card",font("NotoSans-Bold.ttf",64),(70,100,40))
 ctext(bd,S/2,S-285,"امسح لفتح كارت التواصل",font("NotoSansArabic-Bold.ttf",68),(70,100,40))
-B.save('./sinai-qr-B-clean.png',dpi=(300,300))
+B.save(f'./{PREFIX}-B-clean.png',dpi=(300,300))
 # ---------- C round dark sticker (transparent corners)
 S=3000; C=Image.new('RGBA',(S,S),(0,0,0,0)); cd=ImageDraw.Draw(C)
 cd.ellipse([0,0,S,S],fill=(176,138,40)); cd.ellipse([40,40,S-40,S-40],fill=(16,22,10))
@@ -111,4 +121,4 @@ spaced(cd,(S/2,230),"SINAI SEEDS",font("NotoSerif-Bold.ttf",150),GOLD,36)
 spaced(cd,(S/2,440),"GROW  HARVEST",font("NotoSans-Bold.ttf",56),(200,170,95),24)
 ctext(cd,S/2,S-500,"Scan to open the digital card",font("NotoSans-Bold.ttf",96),CREAM)
 ctext(cd,S/2,S-370,"امسح الكود لفتح كارت التواصل",font("NotoSansArabic-Bold.ttf",96),(197,225,165))
-C.save('./sinai-qr-C-sticker-round.png',dpi=(300,300))
+C.save(f'./{PREFIX}-C-sticker-round.png',dpi=(300,300))
