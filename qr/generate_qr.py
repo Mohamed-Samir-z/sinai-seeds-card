@@ -3,7 +3,8 @@
 Usage:  python3 generate_qr.py [URL] [OUTPUT-PREFIX]
   URL            the link the QR opens (default: the live card)
   OUTPUT-PREFIX  file name stem, written in this folder (default: sinai-qr)
-  MARK           leaf (default) or lockup: what sits in the middle of the QR
+  MARK           leaf (default), lockup (dark badge) or free (logo on the
+                 background, no badge): what sits in the middle of the QR
 
 The design is the same for every URL; only the encoded link changes.
 Needs: pip install segno pillow numpy
@@ -18,6 +19,12 @@ MARK = sys.argv[3] if len(sys.argv) > 3 else "leaf"      # "leaf" or "lockup"
 LOCKUP_W, LOCKUP_H = 363, 414
 LOCKUP = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                  "..", "site", "img", "logo-lockup.png")).convert("RGBA")
+# same logo with the white sign plate tinted to the card cream, so it can sit
+# straight on the cream background with no visible plate edge
+_CREAM = (250, 243, 214)
+_tint = Image.new("RGB", LOCKUP.size, _CREAM)
+LOGO_CREAM = ImageChops.multiply(LOCKUP.convert("RGB"), _tint).convert("RGBA")
+LOGO_CREAM.putalpha(LOCKUP.getchannel("A"))
 F="/usr/share/fonts/truetype/noto/"
 def font(n,s): return ImageFont.truetype(F+n,s)
 # logo
@@ -36,8 +43,9 @@ def make_qr(px, c1, c2, mark="leaf", logo_bg=(250,243,214), ring=(176,138,40), c
 
     mark="leaf"    the old green leaf on a dark disc (the first card's set)
     mark="lockup"  the real Sinai Seeds logo, leaves over the sign plate, on a
-                   white badge (the second card's set). It is kept small enough
-                   that the QR still decodes; error correction is already H.
+                   dark badge with a gold ring
+    mark="free"    the same logo straight on the background, no badge, plate
+                   tinted to the card cream so it has no visible edge
     """
     SS=2; P=px*SS; m=P/N
     mask=Image.new('L',(P,P),0); d=ImageDraw.Draw(mask)
@@ -45,6 +53,11 @@ def make_qr(px, c1, c2, mark="leaf", logo_bg=(250,243,214), ring=(176,138,40), c
     if mark=="leaf":
         cr=clear*N/2+0.8; hw=hh=cr
         def covered(x,y): return math.hypot(x+.5-cx,y+.5-cy)<cr
+    elif mark=="free":
+        logo_h=0.24*N                       # logo height in modules
+        hw=logo_h*LOCKUP_W/LOCKUP_H/2+1.0   # one module of margin all round
+        hh=logo_h/2+1.0
+        def covered(x,y): return abs(x+.5-cx)<hw and abs(y+.5-cy)<hh
     else:
         hh=badge_h*N/2+0.8
         hw=hh*LOCKUP_W/LOCKUP_H*1.06
@@ -71,6 +84,9 @@ def make_qr(px, c1, c2, mark="leaf", logo_bg=(250,243,214), ring=(176,138,40), c
         r2=int(R*0.82); dd.ellipse([P/2-r2,P/2-r2,P/2+r2,P/2+r2],fill=(22,30,12,255))
         lw=int(r2*1.45); lh=int(logo.height*lw/logo.width); l=logo.resize((lw,lh),Image.LANCZOS)
         out.alpha_composite(l,(int(P/2-lw/2),int(P/2-lh/2)+int(R*0.02)))
+    elif mark=="free":
+        lw=int(2*(hw-1.0)*m); lh=int(2*(hh-1.0)*m)
+        out.alpha_composite(LOGO_CREAM.resize((lw,lh),Image.LANCZOS),(int(P/2-lw/2),int(P/2-lh/2)))
     else:
         bw=int(2*hw*m); bh=int(2*hh*m)
         dd.rounded_rectangle([P/2-bw/2,P/2-bh/2,P/2+bw/2,P/2+bh/2],radius=int(bh*.10),
