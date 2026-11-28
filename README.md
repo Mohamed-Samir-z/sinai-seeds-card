@@ -27,6 +27,7 @@ To change the link preview: re-render og-preview.html to a 1200x630 image (keep 
 - QR error correction is H; re-run generate_qr.py after changing URL in the script.
 
 ## Change log
+- 2026-11-28: the button that opens sinai-seeds.com now reads "Browse our website" in all 4 languages (Arabic تصفح موقعنا, Chinese 浏览我们的网站, Turkish Web sitemizi incele). Both versions carry it.
 - 2026-11-28: name corrected to Ali Fayed everywhere (page title, meta, all 4 languages, vCard N/FN, download filename, share text, WeChat modal, og-preview, README, contact.vcf). The client's own email alyfayed@sinai-seeds.com and his links are unchanged.
 - 2026-11-28: the white sign plate in the hero logo no longer looks pasted on: a warm gold halo sits behind the lockup and a light cream tint (multiply, .55 to .42) covers the plate only. Logo artwork itself untouched. Same treatment on the og image.
 - 2026-11-28: og.jpg re-rendered from og-preview.html at 1200x630 with the real logo lockup (69 KB).
