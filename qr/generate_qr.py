@@ -27,20 +27,25 @@ _tint = Image.new("RGB", LOCKUP.size, _CREAM)
 LOGO_CREAM = ImageChops.multiply(LOCKUP.convert("RGB"), _tint).convert("RGBA")
 LOGO_CREAM.putalpha(LOCKUP.getchannel("A"))
 
-# same again, but the whole sign plate is flattened to flat cream so not even its
-# faint crop edge shows when the logo sits straight on a cream background
-_PLATE_TOP = int(round(LOCKUP_H * 252 / 414))     # plate starts 60.8% down the image
-LOGO_FREE = LOCKUP.copy()
-_plate = ImageChops.multiply(LOGO_FREE.crop((0, _PLATE_TOP, LOCKUP_W, LOCKUP_H)).convert("RGB"),
-                             Image.new("RGB", (LOCKUP_W, LOCKUP_H - _PLATE_TOP), _CREAM))
-_a = np.asarray(_plate).astype("int16")
-_lum = _a.mean(axis=2)
-_sat = _a.max(axis=2) - _a.min(axis=2)
-# everything light, and the faint grey line the crop left along the plate edge,
-# becomes the background colour; the dark text is untouched
-_a[(_lum > 210) | ((_lum > 165) & (_sat < 25))] = _CREAM
-_a[:, :3] = _CREAM; _a[:, -3:] = _CREAM; _a[-3:, :] = _CREAM   # the crop's own edge line
-LOGO_FREE.paste(Image.fromarray(_a.astype("uint8")), (0, _PLATE_TOP))
+# same again, but the sign plate is dropped altogether: only the leaves and the
+# sign's lettering are kept, with a soft alpha edge, so nothing rectangular is
+# drawn behind the mark at all
+_PLATE_TOP = int(round(LOCKUP_H * 252 / 414))
+LOGO_FREE = Image.new("RGBA", LOCKUP.size, (0, 0, 0, 0))
+_src = np.asarray(LOCKUP.crop((0, _PLATE_TOP, LOCKUP_W, LOCKUP_H)).convert("RGB")).astype("float32")
+_lum = _src.mean(axis=2)
+_green = (_src[..., 1] - np.maximum(_src[..., 0], _src[..., 2])) > 18
+_ink = np.clip((200 - _lum) / 60.0, 0, 1)      # text and anything darker than the plate
+_ink[_green] = 1.0                              # leaf pixels stay as they are
+# drop the plate's own border line (it runs along the crop's edges and is what
+# made the patch read as a hard rectangle); the text sits well inside it
+_ink[:18, :] = 0; _ink[146:, :] = 0; _ink[:, :14] = 0; _ink[:, 346:] = 0
+_ink_img = Image.fromarray(_src.astype("uint8")).convert("RGBA")
+_ink_img.putalpha(Image.fromarray((_ink * 255).astype("uint8")))
+LOGO_FREE.alpha_composite(_ink_img, (0, _PLATE_TOP))
+# the leaves above the plate, unchanged
+LOGO_FREE.alpha_composite(LOCKUP.crop((0, 0, LOCKUP_W, _PLATE_TOP)), (0, 0))
+LOGO_FREE.save('logo-free-preview.png')
 F="/usr/share/fonts/truetype/noto/"
 def font(n,s): return ImageFont.truetype(F+n,s)
 # logo
@@ -102,7 +107,8 @@ def make_qr(px, c1, c2, mark="leaf", logo_bg=(250,243,214), ring=(176,138,40), c
         out.alpha_composite(l,(int(P/2-lw/2),int(P/2-lh/2)+int(R*0.02)))
     elif mark=="free":
         lw=int(2*(hw-1.0)*m); lh=int(2*(hh-1.0)*m)
-        out.alpha_composite(LOGO_FREE.resize((lw,lh),Image.LANCZOS),(int(P/2-lw/2),int(P/2-lh/2)))
+        _lo = LOGO_FREE.convert("RGBa").resize((lw,lh),Image.LANCZOS).convert("RGBA")  # premultiplied: no halo from the transparent edge
+        out.alpha_composite(_lo,(int(P/2-lw/2),int(P/2-lh/2)))
     else:
         bw=int(2*hw*m); bh=int(2*hh*m)
         dd.rounded_rectangle([P/2-bw/2,P/2-bh/2,P/2+bw/2,P/2+bh/2],radius=int(bh*.10),
